@@ -1,0 +1,24 @@
+module ApplicationHelper
+
+
+  def display_word_cloud(count_map)
+    # work out the range of sizes
+    min_count, max_count = count_map.values.minmax
+
+    # map font sizes
+    font_map = count_map.clone
+    font_map.each do |k, v|
+      font_map[k] = map_font(v, min_count, max_count)
+    end
+
+    # output some html
+    output = ""
+    font_map.each do |k, v|
+      output += "<span style=\"font-size: #{v}px;\">#{k}(#{count_map[k]}) </span>"
+    end
+    output.html_safe
+  end
+
+
+
+end

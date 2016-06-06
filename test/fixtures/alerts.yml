@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  issued_at: 2015-11-23 10:15:21
+  tags: 1
+  threshold: 1
+  description: MyText
+
+two:
+  issued_at: 2015-11-23 10:15:21
+  tags: 1
+  threshold: 1
+  description: MyText

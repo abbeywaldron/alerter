@@ -1,0 +1,3 @@
+Flood alert for Indonesia issued at: <%= @time %>
+Number of tags: <%= @tags %>
+

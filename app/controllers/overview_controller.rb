@@ -1,0 +1,29 @@
+class OverviewController < ApplicationController
+
+  def index
+    @mon = OnMon.new
+    @total = @mon.get_total
+    @time = @mon.get_end_time
+    @tweets = @mon.get_tweets
+    @graph_data, @graph_errors, @graph_start_time, @graph_end_time = @mon.get_graph_data
+#    @trend_data, @trend_errors, @trend_start_time, @trend_end_time = @mon.get_trend_graph_data
+
+    # @top_locations, @map_locations = @mon.get_locations
+    @keywords = @mon.get_keywords
+
+
+    @calibrator = Calibrator.new
+    @threshold = @calibrator.threshold
+    @issue_alert = ( @total > @threshold ) ? true : false
+
+    @calib_summary_data = @calibrator.summary_data
+    @mean_data = @calibrator.means
+    @cl_data = @calibrator.cls
+
+    loc = Locator.new
+    loc.get_json
+    @top_locations, @map_locations = loc.find_matches(@tweets)
+
+  end
+
+end

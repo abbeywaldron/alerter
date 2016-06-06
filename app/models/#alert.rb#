@@ -1,0 +1,92 @@
+class Alert < ActiveRecord::Base
+  # don't make accessors...
+
+  def self.find_latest
+    # add a where clause on 'active' ?
+    order('issued_at DESC').limit(1).first
+  end
+
+
+
+  def self.find_all
+    output = ""
+    alerts = order('issued_at DESC').limit(50).all
+    alerts.each do |a|
+      output += "<p>" + a.print + "</p>"
+    end
+    output.html_safe
+  end
+
+
+  def self.active_count(offset=0)
+    alerts = order('issued_at DESC').all
+    sequence = Array.new
+    tag_sequence = Array.new
+    alerts.each do |a|
+      sequence << a.active
+      tag_sequence << a.tags
+    end
+    for i in 0...offset
+      sequence.delete_at(i)
+      tag_sequence.delete_at(i)
+    end
+    count = 0
+    sequence.each do |thing|
+      break unless thing
+      count += 1
+    end
+    count
+  end
+
+  def self.issue(issued_at,tags,description)
+
+    latest = Alert.find_latest
+    ac = Alert.active_count
+    ac1 = Alert.active_count(1)
+    if latest.active
+      if ac > 5
+        Alert.issue_hold(issued_at,tags,description)
+        p "skipping"
+        # skip after 5 alerts issued until event over
+        return false
+      else
+        p "issueing alert!"
+        Alert.issue_alert(issued_at,tags,description)
+      end
+    else
+      # flood not current, did one just end?
+      if ac1 > 5
+        # issue summary for previous event
+        p "issueing summary"
+        Alert.issue_summary(issued_at,tags,description,ac1)
+      else
+        # else no flood event
+        p "no flood"
+        return false
+      end
+    end
+  end
+
+
+  def self.issue_alert(issued_at, tags, description)
+    mail = DefaultMailer.alert(issued_at,tags,description)
+    mail.deliver
+  end
+
+  def self.issue_summary(issued_at, tags, description)
+    mail = DefaultMailer.hold_alert(issued_at,tags,description)
+    mail.deliver
+  end
+
+  def self.issue_summary(issued_at, tags, description, buckets)
+    mail = DefaultMailer.end_alert(issued_at,tags,description,buckets)
+    mail.deliver
+  end
+
+
+  def print
+    "#{self.issued_at} #{self.tags} #{self.threshold} #{self.active} #{Alert.active_count} #{Alert.active_count(1)}"
+  end
+
+
+end

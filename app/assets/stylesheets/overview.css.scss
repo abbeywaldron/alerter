@@ -1,0 +1,88 @@
+// Place all the styles related to the overview controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+
+
+// main colours
+$grey: #555555;
+$orange: #ce4a36;
+$lightorange: #da7667;
+$lightblue: #98dce6;
+$blue1: #36bace;
+$darkblue: #366ece;
+
+
+// backup colours (e.g. for plots)
+$greenblue: #36ce96;
+$green1: #6ece36;
+$pinkred: #ce366e;
+$purple: #4a36ce;
+
+
+
+body {
+
+     font-family: Futura, Helvetica, sans-serif;
+     color: $grey;
+     background-color: #ffffff;
+     overflow-x: hidden;
+
+}
+
+
+
+
+
+h1 {
+   color: $grey;
+
+}
+
+
+.full-width {
+	    width: 100%;
+}
+
+.tweet_holder {
+	      font-size: 14px;
+	      margin-left: 2px;
+	      margin-right: 5px;
+	      margin-top: 10px;
+	      margin-bottom: 20px;
+	      padding: 5px;
+	      border-style: solid;
+	      background-color: #ffffff;
+	      border-color: $orange;
+	      border-width: 2px;
+	      border-radius: 4px;
+}
+
+.regular {
+	      font-size: 14px;
+	      color: $lightorange;
+}
+
+.location {
+	  font-size: 14px;
+	  border-color: $blue1;
+	  color: $blue1 !important;
+}
+
+
+.keywords {
+	  color: $blue1;
+}
+
+.locations {
+	   color: $blue1;
+}
+
+.padded {
+	padding-top: 30px;
+}
+
+#map {
+     height: 420px;
+}
+

@@ -1,0 +1,8 @@
+<h1><%= @important %></h1>
+<h3>Latest:</h3>
+<p><%= @latest %></p>
+
+<h3>All:</h3>
+<% @all.each do |alert| %>
+<%= display_alert(alert) %>
+<% end %>

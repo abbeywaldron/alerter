@@ -1,0 +1,185 @@
+<% provide(:total, "#{@total}") %>
+<meta http-equiv="Refresh" Content="600">
+
+<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+
+
+<!--
+<div class="row">
+  <div class="col-sm-6 col-sm-offset-1">
+    <h1>Flood Tags for Indonesia</h1>
+
+    
+    <% if @issue_alert %>
+    <h2 style="color: red;">ALERT!!!!</h2>
+    <% end %>
+
+    <h2><%= @total %></h2>
+
+    <h5>Current threshold is: <%= @threshold %></h5>
+    <h4>Time: <%= @time %></h4>
+  </div>
+  <div class="col-sm-4"></div>
+</div>
+
+
+<div class="row padded"></div>
+
+-->
+
+<div class="row">
+  <div class="col-sm-12">
+    <div id="map"></div>
+  </div>
+</div>
+
+<!--
+<div class="row padded"></div>
+-->
+
+<div class="row">
+  <div class="col-sm-5 col-sm-offset-1" id="plot1">
+  </div>
+
+  <div class="col-sm-5">
+    <div class="row">
+      <div class="col-xs-12">
+	<h3>Tweets in past 10 mins:</h3>
+	<h2><%= @total %></h2>
+	<h3>Keywords:</h3>
+	<p class="keywords"><%= display_word_cloud(@keywords) %></p>
+	<h3>Locations:</h3>
+	<p class="locations"><%= display_word_cloud(@top_locations) %></p>      
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!--
+<div class="row padded"></div>
+-->
+
+
+
+<script>
+//  var map = L.map('map').setView([-6.21, 106.85], 9);
+  var map = L.map('map').setView([-2.0, 117.0], 5);
+  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+  attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+  maxZoom: 18,
+  id: '<%= get_map_id %>',
+  accessToken: '<%= get_map_token %>'
+  }).addTo(map);
+
+
+</script>
+
+
+<% pairs = @map_locations.values %>
+<% pairs.each do |pair| %>
+  <script>
+    var circle = L.circle([<%=pair[0]%>, <%=pair[1]%>], <%=circle_radius(pair[2])%>, {
+    color: '<%= circle_colour %>', fillColor: '<%= circle_fill_colour %>', fillOpacity: 0.5
+    }).addTo(map);
+  </script>
+<% end %>
+
+
+<div class="row">
+  <div class="col-sm-4 col-sm-offset-1">
+    <h3>Latest Tweets:</h3>
+    <% @tweets.each do |tweet| %>
+    <%= display_tweet(tweet) %>
+    <% end %>
+  </div>  
+
+  <div class="col-sm-5 col-sm-offset-1">
+    <h3>Past Four Days:</h3>
+    <!--div id="plot2"-->
+    </div>
+  </div>
+</div>
+
+      
+<!-- a plot example -->
+<script type="text/javascript">
+  if("object" != typeof d3 || "function" != typeof _){
+  document.write("d3 or underscore not found.")
+  document.write(" Run \n<pre>   bower install</pre>\n\nor use CDN to pull down dependencies");
+  }
+</script>      
+   
+
+<script>
+  var t0 = new Date('<%= @graph_start_time %>');
+  var t1 = new Date('<%= @graph_end_time %>');
+
+  
+  var graph_data = JSON.parse("[" + '<%= @graph_data %>' + "]");
+  var graph_errors = JSON.parse("[" + '<%= @graph_errors %>' + "]");
+  var mean_data = JSON.parse("[" + '<%= @mean_data %>' + "]");
+  var cl_data = JSON.parse("[" + '<%= @cl_data %>' + "]");
+
+
+
+  var errs =  _.map(_.range(graph_errors.length), function(i) { return [graph_errors[i],graph_errors[i]] });
+  
+
+  var w = 400;
+  var h = 400;
+
+  console.log(t0)
+  console.log(t1)
+  console.log(graph_data)
+  console.log(errs)
+
+  i3d3.plot({data: [{type: "bars",
+                   bins: cl_data,
+                   color: "#36bace",
+                   range: [t0, t1]},
+                {type: "bars",
+                   bins: mean_data,
+                   color: "#98dce6",
+                   range: [t0, t1]},
+                {type: "bars",
+                   bins: graph_data,
+                   errors: errs,
+                   color: "#555555",
+                   opacity: 0.7,
+                   error_color: "black",
+                   range: [t0, t1]}
+        
+         ],
+           div: "plot1",
+           size: [w,h],
+           padding_right: 50,
+           xlabel: "Time (UTC)",
+           ylabel: "Number of 'banjir' Tags",
+           extras: [{note: {x: 0.62*w, y: 0.05*h, text: "Background Rate", color: "#98dce6", units: "pixels"}}, {note: {x: 0.74*w, y: 0.1*h, text: "95% CL", color: "#36bace", units: "pixels"}},  {note: {x: 0.78*w, y: 0.15*h, text: "Data", color: "#555555", units: "pixels"}}]
+      });
+
+/*
+  t0 = new Date('<%= @trend_start_time %>');
+  t1 = new Date('<%= @trend_end_time %>');
+  
+
+  graph_data = JSON.parse("[" + '<%= @trend_data %>' + "]");
+
+  
+  i3d3.plot({data: [{type: "bars",
+                   bins: graph_data,
+                   color: "#36bace",
+                   range: [t0, t1]
+                    }],
+           div: "plot2",
+           size: [400,400],
+           padding_right: 50,
+           xlabel: "Time (UTC)",
+           ylabel: "Number of 'banjir' Tags"
+  });
+*/
+</script>
+
+
+

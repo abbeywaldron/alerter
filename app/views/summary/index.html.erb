@@ -1,0 +1,8 @@
+<h3>Latest:</h3>
+<p><%= @latest %></p>
+
+<h3>All:</h3>
+<% @all.each do |alert| %>
+<%= link_to(thing_summary_path(alert),thing_summary_path(alert)) %>
+<%= display_alert(alert) %>
+<% end %>

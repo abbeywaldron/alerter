@@ -1,0 +1,37 @@
+<%= display_alert(@current_alert) %>
+
+<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<div class="row">
+  <div class="col-sm-12">
+    <div id="map"></div>
+  </div>
+</div>
+
+<p class="locations"><%= display_word_cloud(@top_locations) %></p>
+
+<h3><%= @current_alert.issued_at %></h3>
+<h3><%= @current_alert.tags %></h3>
+<%= display_text(@current_alert.description) %>
+<h3><%= @current_alert.threshold %></h3>
+
+<script>
+  //  var map = L.map('map').setView([-6.21, 106.85], 9);
+  var map = L.map('map').setView([-2.0, 117.0], 5);
+  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+  attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+  maxZoom: 18,
+  id: '<%= get_map_id %>',
+  accessToken: '<%= get_map_token %>'
+  }).addTo(map);
+
+</script>
+
+
+<% pairs = @map_locations.values %>
+<% pairs.each do |pair| %>
+<script>
+  var circle = L.circle([<%=pair[0]%>, <%=pair[1]%>], <%=circle_radius(pair[2])%>, {
+  color: '<%= circle_colour %>', fillColor: '<%= circle_fill_colour %>', fillOpacity: 0.5
+  }).addTo(map);
+</script>
+<% end %>

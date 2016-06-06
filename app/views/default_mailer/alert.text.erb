@@ -1,0 +1,6 @@
+Flood alert for Indonesia issued at: <%= @time %>
+Number of tags: <%= @n_tags %>
+
+<% @tags.each do |tag| %>
+<%= tag + "\n" %>
+<% end %>

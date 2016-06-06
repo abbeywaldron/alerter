@@ -1,0 +1,21 @@
+class Tweet < ActiveRecord::Base
+
+  attr_accessor :text
+  attr_accessor :time
+  attr_accessor :username
+  attr_accessor :location
+
+
+  def set(tag)
+    @text = tag['text']
+    @username = tag['source']['username']
+    @location = ( tag['locations'].size == 0 ) ? false : true
+    @time = tag['date']
+  end
+
+
+  def css_class
+    ( @location  ) ? "location" : "regular"
+  end
+
+end
