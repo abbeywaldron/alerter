@@ -1,6 +1,18 @@
 class DefaultMailer < ApplicationMailer
   add_template_helper(ApplicationHelper)
 
+  def self.get_emails
+    mail_path = ENV['OPENSHIFT_DATA_DIR'] + "/.EMAILS"
+    mails = Array.new
+    File.open(mail_path).each do |line|
+      email = line.match(/\w+@\w+\.\w+/)
+      mails << email[0] if email[0]
+    end
+    p mails
+    mails
+  end
+
+
   def alert(time, n_tags, tags, locations)
     endtime = DateTime.strptime(time,"%Y-%m-%dT%H:%M:%S.000Z")
     @time = endtime.strftime("%H:%M:%S (%d/%m/%Y)")
@@ -8,7 +20,7 @@ class DefaultMailer < ApplicationMailer
     @tags = tags
     @locations = locations
     @subject = "(#{@n_tags}) alert at #{@time} #{@locations.first}"
-    @recipients = get_emails
+    @recipients = DefaultMailer.get_emails
     mail(to: @recipients, subject: @subject)
   end
 
@@ -19,7 +31,7 @@ class DefaultMailer < ApplicationMailer
     @n_tags = n_tags
     @tags = tags
     @subject = "HOLDING ALERTS, EVENT ONGOING - #{@time}"
-    @recipients = get_emails
+    @recipients = DefaultMailer.get_emails
     mail(to: @recipients, subject: @subject)
   end
 
@@ -31,7 +43,7 @@ class DefaultMailer < ApplicationMailer
     @tags = tags
     @n_buckets = n_buckets
     @subject = "End of alert (duration #{n_buckets}) at #{@time}"
-    @recipients = get_emails
+    @recipients = DefaultMailer.get_emails
     mail(to: @recipients, subject: @subject)
   end
 
